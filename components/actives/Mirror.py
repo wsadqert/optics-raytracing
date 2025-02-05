@@ -8,25 +8,7 @@ __all__ = ["Mirror"]
 
 class Mirror(Active):
 	def __init__(self, name: str, center: Point, size: float, angle: float, *args, **kwargs):
-		super().__init__(name, center, size, size, angle, *args, **kwargs)
-
-		self.size = size
-	
-	def to_points(self):
-		return [self.point]
-
-	def get_points(self) -> tuple[Point, Point]:
-		angle_rad = math.radians(self.angle)
-
-		x1 = self.x - self.size / 2 * math.cos(angle_rad)
-		y1 = self.y - self.size / 2 * math.sin(angle_rad)
-		x2 = self.x + self.size / 2 * math.cos(angle_rad)
-		y2 = self.y + self.size / 2 * math.sin(angle_rad)
-		
-		return (
-			Point(x1, y1),
-			Point(x2, y2)
-		)
+		super().__init__(name, center, 0, size, angle, *args, **kwargs)
 	
 	def apply(self, ray: Ray):
 		lens_segment = self.to_segment()
