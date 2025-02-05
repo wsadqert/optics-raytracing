@@ -1,15 +1,17 @@
 from rich.traceback import install
+
 install(show_locals=True, width=300)
 
 from tkinter import Tk
 import numpy as np
-from queue import Queue  # Import Queue
+from queue import Queue
 
 from parser import parse_config
 from frontend import Drawer, InteractiveCanvas
 from frontend import DrawerConfig, TraceConfig
 from basics import *
 from components import *
+from geometry import *
 
 
 class RayTracingApp:
@@ -18,6 +20,7 @@ class RayTracingApp:
 
 		frontend_config_raw = parse_config(".config/frontend.cfg")
 		trace_config_raw = parse_config(".config/raytrace.cfg")
+		
 		drawer_config = DrawerConfig(**frontend_config_raw['Drawer'])
 		self.trace_config = TraceConfig(**trace_config_raw['raytrace'])
 
@@ -27,29 +30,25 @@ class RayTracingApp:
 		self.drawer = Drawer(self.canvas, drawer_config)
 
 		self.create_components()
+
+		for component in self.components:
+			self.drawer.draw_component(component)
+		
+		self.trace()
 		self.draw_rays()
 
 	def create_components(self):
-		self.lasers = [
-			Laser("Laser1", Point(400, 300), angle=30)
+		self.sources: list[Source] = [
+			Laser("Laser1", Point(400, 300), angle=30),
+			# Lamp("Lamp1", Point(300, 300)),
 		]
-		self.lamps = [
-			# Lamp("Lamp1", Point(300, 300))
-		]
-		self.lenses = [
-			# Lens(name="Lens1", center=Point(500, 400), radius=100, angle=0, focus=500)
-		]
-		self.mirrors = [
-			Mirror(name="Mirror1", center=Point(600, 400), size=100, angle=0)
+		self.actives: list[Active] = [
+			# Lens(name="Lens1", center=Point(500, 400), radius=100, angle=0, focus=500),
+			Mirror(name="Mirror1", center=Point(600, 400), size=100, angle=0),
+			# Wall(name="Wall1", center=Point(700, 400), size=100, angle=0),
 		]
 
-		self.sources: list[Source] = self.lamps + self.lasers
-		self.actives: list[Active] = self.lenses + self.mirrors
-
-		# self.drawer.draw_lens(self.lenses[0])
-		self.drawer.draw_mirror(self.mirrors[0])
-
-		self.trace()
+		self.components: list[Component] = self.sources + self.actives
 
 	def trace(self):
 		tracing_queue = Queue()
@@ -64,8 +63,8 @@ class RayTracingApp:
 		while not tracing_queue.empty():
 			ray: Ray = tracing_queue.get()
 
-			for current_length in np.arange(0, ray.length, self.trace_config.step):
-				current_point: Point = ray.get_points()[0] + Vector.from_polar(current_length, ray.angle)
+			for current_point in iterate_over_length(Segment.from_points(*ray.get_points()), step=self.trace_config.step):
+				is_intersection_found = False
 
 				for active in self.actives:
 					if active.distance(current_point) < self.trace_config.detection_distance:
@@ -74,6 +73,12 @@ class RayTracingApp:
 						ray.modify("point_2", current_point)
 						draw_list.append(ray)
 
+						is_intersection_found = True
+						break
+				
+				if is_intersection_found:
+					break
+		
 		for ray in draw_list:
 			self.drawer.draw_ray(ray)
 

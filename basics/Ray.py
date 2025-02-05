@@ -1,12 +1,12 @@
 import math
 from math import pi
 
+from .Basic2D import Basic2D
 from .Point import Point
-from .GeometryBasic import GeometryBasic
 
 __all__ = ["Ray"]
 
-class Ray(GeometryBasic):
+class Ray(Basic2D):
 	def __init__(self):
 		self.x1 = 0
 		self.y1 = 0

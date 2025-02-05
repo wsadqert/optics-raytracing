@@ -1,12 +1,11 @@
 import math
 
+from .Basic2D import Basic2D
 from .Point import Point
-from .GeometryBasic import GeometryBasic
-
 
 __all__ = ["Segment"]
 
-class Segment(GeometryBasic):
+class Segment(Basic2D):
 	def __init__(self, point_1: Point, point_2: Point):
 		self.x1 = point_1.x
 		self.y1 = point_1.y

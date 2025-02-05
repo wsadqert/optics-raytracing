@@ -11,6 +11,9 @@ class Mirror(Active):
 		super().__init__(name, center, size, size, angle, *args, **kwargs)
 
 		self.size = size
+	
+	def to_points(self):
+		return [self.point]
 
 	def get_points(self) -> tuple[Point, Point]:
 		angle_rad = math.radians(self.angle)

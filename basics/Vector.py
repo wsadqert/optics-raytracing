@@ -2,20 +2,17 @@ import math
 from dataclasses import dataclass
 from typing import Union
 
+from .Basic2D import Basic2D
+from .Segment import Segment
 from .Point import Point
-
-from .GeometryBasic import GeometryBasic
 
 __all__ = ["Vector"]
 
 
 @dataclass
-class Vector(GeometryBasic):
+class Vector(Basic2D):
 	x: float = 0
 	y: float = 0
-
-	def to_point(self) -> Point:
-		return Point(self.x, self.y)
 
 	def rotate(self, angle: float) -> "Vector":
 		"""
@@ -32,6 +29,10 @@ class Vector(GeometryBasic):
 	@classmethod
 	def from_points(cls, point_1: Point, point_2: Point):
 		return cls(point_2.x - point_1.x, point_2.y - point_1.y)
+
+	@classmethod
+	def from_segment(cls, segment: Segment):
+		return cls.from_points(*segment.get_points())
 	
 	@classmethod
 	def from_point(cls, point: Point):
@@ -43,20 +44,41 @@ class Vector(GeometryBasic):
 			length * math.cos(math.radians(angle)), 
 			length * math.sin(math.radians(angle))
 		)
+	
+	def get_points(self):
+		return [Point(self.x, self.y),]
+	
+	def __neg__(self) -> "Vector":
+		return Vector(-self.x, -self.y)
 
 	def __add__(self, other: Union["Vector", Point]) -> "Vector":
 		return Vector(self.x + other.x, self.y + other.y)
 
+	def __radd__(self, other: Point) -> "Vector":
+		return self + other
+
 	def __sub__(self, other: Union["Vector", Point]) -> "Vector":
 		return Vector(self.x - other.x, self.y - other.y)
 
+	def __rsub__(self, other: Point) -> "Vector":
+		return -(self - other)
+	
+	def __rsub__(self, other: Point) -> "Vector":
+		return -(self - other)
+
 	def __mul__(self, scalar: float) -> "Vector":
 		return Vector(self.x * scalar, self.y * scalar)
+	
+	def __rmul__(self, scalar: float) -> "Vector":
+		return self * scalar
+	
+	def __truediv__(self, scalar: float) -> "Vector":
+		return Vector(self.x / scalar, self.y / scalar)
 
 	def __eq__(self, other: "Vector") -> bool:
 		if isinstance(other, int):
 			if other == 0:
-				return self.x == 0 and self.y == 0
+				return self == Vector(0, 0)
 			else:
 				return False
 
@@ -66,4 +88,4 @@ class Vector(GeometryBasic):
 		return False
 
 	def __bool__(self):
-		return bool(self.x != 0 or self.y != 0)
+		return self != Vector(0, 0)

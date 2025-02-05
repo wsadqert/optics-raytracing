@@ -1,4 +1,6 @@
-class GeometryBasic:
+from abc import ABC
+
+class GeometryBasic(ABC):
 	x1: float = 0
 	y1: float = 0
 	x2: float = 0

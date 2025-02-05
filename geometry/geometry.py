@@ -1,5 +1,8 @@
+from typing import Generator
 import numpy as np
 from basics import *
+
+__all__ = ["calculate_ray_direction", "ray_segment_intersection", "calculate_point_segment_distance", "iterate_over_length"]
 
 def calculate_ray_direction(ray: Ray) -> Vector:
 	# Calculate the direction vector of the ray
@@ -22,7 +25,7 @@ def _intersect_ray_segment(ray: Ray, ray_direction: Vector, segment: Segment) ->
 
 	# Ray start point
 	P = ray_start.to_tuple()
-	D = ray_direction.to_point().to_tuple()
+	D = ray_direction.get_points()[0].to_tuple()
 
 	# Segment start and end points
 	A = segment.get_points()[0].to_tuple()
@@ -55,7 +58,6 @@ def ray_segment_intersection(segment: Segment, ray: Ray) -> Point | None:
 	
 	return intersection
 
-
 # https://chatgpt.com/share/67a24fc7-0408-8013-8b6d-da3bcfc3edcb
 def calculate_point_segment_distance(point: Point, segment: Segment) -> float:
 	# Convert points to numpy arrays
@@ -81,3 +83,22 @@ def calculate_point_segment_distance(point: Point, segment: Segment) -> float:
 	
 	# Return the Euclidean distance
 	return np.linalg.norm(P - closest_point)
+
+def iterate_over_length(segment: Segment, step: float = None, num_steps: int = None, direction: int = 1) -> Generator[Point, None, None]:
+	if step is not None and num_steps is not None:
+		raise ValueError("Cannot specify both `step` and `num_steps`")
+	if step is None and num_steps is None:
+		raise ValueError("Must specify either `step` or `num_steps`")
+	if direction not in (1, -1):
+		raise ValueError("Direction must be 1 or -1")
+
+	
+	point_1 = segment.get_points()[0]
+
+	if num_steps is None:
+		num_steps = int(segment.length // step)
+	
+	step: Vector = Vector.from_segment(segment) / num_steps
+
+	for i in range(0, num_steps + 1):
+		yield point_1 + i * step

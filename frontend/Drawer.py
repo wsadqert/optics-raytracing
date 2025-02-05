@@ -25,6 +25,8 @@ class Drawer:
 		return self.canvas
 	
 	def draw_ray(self, ray: Ray):
+		if not isinstance(ray, Ray): raise TypeError
+
 		point_1, point_2 = ray.get_points()
 		x1 = point_1.x
 		y1 = point_1.y
@@ -43,6 +45,8 @@ class Drawer:
 		self.canvas.objects.append(line)
 
 	def draw_source(self, source: Source):
+		if not isinstance(source, Source): raise TypeError
+
 		source_icon = self.canvas.create_oval(
 			source.x - self.config.source_size / 2 + self.canvas.dx_total,
 			source.y - self.config.source_size / 2 + self.canvas.dy_total,
@@ -54,6 +58,8 @@ class Drawer:
 		self.canvas.objects.append(source_icon)
 
 	def draw_lens(self, lens: Lens):
+		if not isinstance(lens, Lens): raise TypeError
+
 		x = lens.x
 		y = lens.y
 		size = lens.size_y
@@ -71,6 +77,8 @@ class Drawer:
 		self.canvas.objects.append(line)
 
 	def draw_mirror(self, mirror: Mirror):
+		if not isinstance(mirror, Mirror): raise TypeError
+
 		x = mirror.x
 		y = mirror.y
 		size = mirror.size
@@ -87,3 +95,17 @@ class Drawer:
 		)
 
 		self.canvas.objects.append(line)
+
+	def draw_component(self, component: Component):
+		if not isinstance(component, Component): raise TypeError
+		
+		if isinstance(component, Source):
+			self.draw_source(component)
+		elif isinstance(component, Lens):
+			self.draw_lens(component)
+		elif isinstance(component, Mirror):
+			self.draw_mirror(component)
+		elif isinstance(component, Wall):
+			self.draw_wall(component)
+		else:
+			raise TypeError(f"Unsupported component type: {type(component)}")

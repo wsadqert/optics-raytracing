@@ -11,10 +11,6 @@ class Active(Component):
 		self.size_x = size_x
 		self.size_y = size_y
 		self.angle = angle
-	
-	@abstractmethod
-	def get_points(self) -> list[Point]:
-		pass
 
 	@abstractmethod
 	def apply(self, ray: Ray) -> Ray:
