@@ -17,10 +17,12 @@ class Active(Component):
 		return calculate_point_segment_distance(point, self.to_segment())
 
 	def get_points(self) -> tuple[Point, Point]:
-		x1 = self.x - self.size / 2 * math.cos(self.angle)
-		y1 = self.y - self.size / 2 * math.sin(self.angle)
-		x2 = self.x + self.size / 2 * math.cos(self.angle)
-		y2 = self.y + self.size / 2 * math.sin(self.angle)
+		angle_rad = math.radians(self.angle)
+
+		x1 = self.x - self.size / 2 * math.cos(angle_rad)
+		y1 = self.y - self.size / 2 * math.sin(angle_rad)
+		x2 = self.x + self.size / 2 * math.cos(angle_rad)
+		y2 = self.y + self.size / 2 * math.sin(angle_rad)
 
 		return (
 			Point(x1, y1),

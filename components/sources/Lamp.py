@@ -6,7 +6,7 @@ __all__ = ["Lamp"]
 
 class Lamp(Source):
 	def __init__(self, name: str, point: Point, intensity: float = 1):
-		super().__init__(name, point, intensity = intensity)
+		super().__init__(name, point, 0, 0, 0, intensity = intensity)
 
 		self.NUM_RAYS = 36
 		self.ray_angles = [360 * i / self.NUM_RAYS for i in range(self.NUM_RAYS)]

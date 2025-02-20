@@ -1,4 +1,5 @@
 from rich.traceback import install
+
 install(show_locals=True, width=300)
 
 from colorama import Fore as FORE
@@ -60,8 +61,9 @@ class RayTracingApp:
 
 	def create_components(self):
 		self.sources: list[Source] = [
-			Laser("Laser1", Point(400, 300), angle=0),
+			# Laser("Laser1", Point(400, 300), angle=0),
 			# Lamp("Lamp1", Point(300, 300)),
+			Beam("Beam1", Point(400, 300), angle=-90, size=100),
 		]
 		self.actives: list[Active] = [
 			# Lens(name="Lens1", center=Point(500, 400), radius=100, angle=0, focus=500),
