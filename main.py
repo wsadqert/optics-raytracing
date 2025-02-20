@@ -1,9 +1,9 @@
 from rich.traceback import install
-
 install(show_locals=True, width=300)
 
+from colorama import Fore as FORE
 from tkinter import Tk
-import numpy as np
+
 from queue import Queue
 
 from parser import parse_config
@@ -31,6 +31,27 @@ class RayTracingApp:
 
 		self.create_components()
 
+		self.limits = {
+			"min": self.components[0].get_points()[0], 
+			"max": self.components[0].get_points()[0], 
+		}
+
+		max_size = -1
+		
+		# find bounding box
+		for component in self.components:
+			if max_size < component.size: max_size = component.size
+			
+			for point in component.get_points():
+				min_x = min(self.limits["min"].x, point.x)
+				min_y = min(self.limits["min"].y, point.y)
+				max_x = max(self.limits["max"].x, point.x)
+				max_y = max(self.limits["max"].y, point.y)
+				
+				self.limits[0] = Point(min_x, min_y)
+				self.limits[1] = Point(max_x, max_y)
+
+		# draw all components
 		for component in self.components:
 			self.drawer.draw_component(component)
 		
@@ -39,16 +60,19 @@ class RayTracingApp:
 
 	def create_components(self):
 		self.sources: list[Source] = [
-			Laser("Laser1", Point(400, 300), angle=30),
+			Laser("Laser1", Point(400, 300), angle=0),
 			# Lamp("Lamp1", Point(300, 300)),
 		]
 		self.actives: list[Active] = [
 			# Lens(name="Lens1", center=Point(500, 400), radius=100, angle=0, focus=500),
-			Mirror(name="Mirror1", center=Point(600, 400), size=100, angle=0),
+			Mirror(name="Mirror1", center=Point(500, 300), size=100, angle=45),
+			Mirror(name="Mirror2", center=Point(500, 400), size=100, angle=45),
+			# Mirror(name="Mirror1", center=Point(650, 400), size=100, angle=-90),
 			# Wall(name="Wall1", center=Point(700, 400), size=100, angle=0),
 		]
 
 		self.components: list[Component] = self.sources + self.actives
+		# self.drawer.draw_mirror(Mirror(name="Mirror1", center=Point(650, 400), size=100, angle=-90))
 
 	def trace(self):
 		tracing_queue = Queue()
@@ -58,26 +82,50 @@ class RayTracingApp:
 		for source in self.sources:
 			for ray in source.get_rays():
 				tracing_queue.put(ray)
-		
+
 		# real tracing!
 		while not tracing_queue.empty():
 			ray: Ray = tracing_queue.get()
+			# print(ray)
 
-			for current_point in iterate_over_length(Segment.from_points(*ray.get_points()), step=self.trace_config.step):
+			is_skipping = False
+
+			for point_idx, current_point in iterate_over_length(Segment.from_points(*ray.get_points()), step=self.trace_config.step):
+				# is current_point the intersection point?
 				is_intersection_found = False
 
-				for active in self.actives:
-					if active.distance(current_point) < self.trace_config.detection_distance:
-						draw_list.append(active.apply(ray))
+				close_to_actives: list[bool] = []  # for each active is the current_point close to the active
 
-						ray.modify("point_2", current_point)
+				for active in self.actives:
+					is_close_to = (active.distance(current_point) < self.trace_config.detection_distance)
+					close_to_actives.append(is_close_to)
+
+					if point_idx == 0:
+						is_skipping = is_close_to
+
+					# if not skipping
+					if is_close_to:
+						if is_skipping:
+							break
+
+						new_ray = active.apply(ray)
+
+						ray.modify("point_2", current_point)  # cropping existing ray at current_point
 						draw_list.append(ray)
+						tracing_queue.put(new_ray)
 
 						is_intersection_found = True
 						break
 				
+				if point_idx != 0 and not any(close_to_actives):
+					is_skipping = False
+
 				if is_intersection_found:
+					# goto next ray
 					break
+
+			else:
+				draw_list.append(ray)
 		
 		for ray in draw_list:
 			self.drawer.draw_ray(ray)
@@ -85,7 +133,6 @@ class RayTracingApp:
 	def draw_rays(self):
 		for source in self.sources:
 			self.drawer.draw_source(source)
-
 
 if __name__ == "__main__":
 	root = Tk()

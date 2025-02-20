@@ -20,7 +20,7 @@ class Point(GeometryBasic):
 		return Point(self.x - other.x, self.y - other.y)
 
 	def __eq__(self, other: "Point") -> bool:
-		return self.x == other.x and self.y == other.y
+		return abs(self.x - other.x) < 1e-9 and abs(self.y - other.y) < 1e-9
 
 	def __mul__(self, scalar: float) -> "Point":
 		return Point(self.x * scalar, self.y * scalar)

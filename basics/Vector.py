@@ -40,9 +40,11 @@ class Vector(Basic2D):
 	
 	@classmethod
 	def from_polar(cls, length: float, angle: float):
+		angle_rad = math.radians(angle)
+
 		return cls(
-			length * math.cos(math.radians(angle)), 
-			length * math.sin(math.radians(angle))
+			length * math.cos(angle_rad), 
+			length * math.sin(angle_rad)
 		)
 	
 	def get_points(self):

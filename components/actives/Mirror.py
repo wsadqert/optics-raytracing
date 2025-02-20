@@ -1,8 +1,7 @@
-import math
 
 from .abc import Active
 from basics import *
-from geometry import ray_segment_intersection, calculate_point_segment_distance
+from geometry import ray_segment_intersection
 
 __all__ = ["Mirror"]
 
@@ -18,7 +17,7 @@ class Mirror(Active):
 		if intersect_point is None:
 			return ray
 		
-		new_angle = 2 * self.angle - ray.angle
+		new_angle = 2 * self.angle - ray.angle % 360
 		new_ray = Ray.from_angle(intersect_point, new_angle)
 
 		return new_ray

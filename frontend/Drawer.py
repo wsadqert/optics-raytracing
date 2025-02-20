@@ -63,13 +63,13 @@ class Drawer:
 		x = lens.x
 		y = lens.y
 		size = lens.size_y
-		angle = lens.angle
+		angle_rad = math.radians(lens.angle)
 
 		line = self.canvas.create_line(
-			x - size / 2 * math.sin(angle) + self.canvas.dx_total,
-			y - size / 2 * math.cos(angle) + self.canvas.dy_total,
-			x + size / 2 * math.sin(angle) + self.canvas.dx_total,
-			y + size / 2 * math.cos(angle) + self.canvas.dy_total,
+			x - size / 2 * math.cos(angle_rad) + self.canvas.dx_total,
+			y - size / 2 * math.sin(angle_rad) + self.canvas.dy_total,
+			x + size / 2 * math.cos(angle_rad) + self.canvas.dx_total,
+			y + size / 2 * math.sin(angle_rad) + self.canvas.dy_total,
 			fill=self.config.lens_color,
 			width=self.config.lens_width,
 		)
@@ -82,14 +82,14 @@ class Drawer:
 		x = mirror.x
 		y = mirror.y
 		size = mirror.size
-		angle = math.radians(90-mirror.angle)
+		angle_rad = math.radians(mirror.angle)
 		# angle = math.radians(0)
 
 		line = self.canvas.create_line(
-			x - size / 2 * math.sin(angle) + self.canvas.dx_total,
-			y - size / 2 * math.cos(angle) + self.canvas.dy_total,
-			x + size / 2 * math.sin(angle) + self.canvas.dx_total,
-			y + size / 2 * math.cos(angle) + self.canvas.dy_total,
+			x - size / 2 * math.cos(angle_rad) + self.canvas.dx_total,
+			y - size / 2 * math.sin(angle_rad) + self.canvas.dy_total,
+			x + size / 2 * math.cos(angle_rad) + self.canvas.dx_total,
+			y + size / 2 * math.sin(angle_rad) + self.canvas.dy_total,
 			fill=self.config.mirror_color,
 			width=self.config.mirror_width,
 		)

@@ -9,17 +9,19 @@ def calculate_ray_direction(ray: Ray) -> Vector:
 	dx = ray.x2 - ray.x1
 	dy = ray.y2 - ray.y1
 	length = ray.length
-
-	print(ray)
-	print(dx, dy, length)
 	
 	if length == 0:
 		return Vector()  # The ray has no direction
 	return Vector(dx / length, dy / length)
 
-def _intersect_ray_segment(ray: Ray, ray_direction: Vector, segment: Segment) -> Point | None:
+def ray_segment_intersection(segment: Segment, ray: Ray) -> Point | None:
 	# Ray represented as P + tD, where P is the start point, D is the direction, and t is a scalar
 	# Segment represented as A + u(B - A), where A is the start point, B is the end point, and u is a scalar
+
+	ray_direction: Vector = calculate_ray_direction(ray)
+	
+	if not ray_direction:
+		return None  # Invalid ray
 
 	ray_start = ray.get_points()[0]
 
@@ -48,17 +50,7 @@ def _intersect_ray_segment(ray: Ray, ray_direction: Vector, segment: Segment) ->
 
 	return None
 
-def ray_segment_intersection(segment: Segment, ray: Ray) -> Point | None:
-	ray_direction = calculate_ray_direction(ray)
-	
-	if not ray_direction:
-		return None  # Invalid ray
-
-	intersection = _intersect_ray_segment(ray, ray_direction, segment)
-	
-	return intersection
-
-# https://chatgpt.com/share/67a24fc7-0408-8013-8b6d-da3bcfc3edcb
+# AI-GENERATED - ChatGPT (https://chatgpt.com/share/67a24fc7-0408-8013-8b6d-da3bcfc3edcb)
 def calculate_point_segment_distance(point: Point, segment: Segment) -> float:
 	# Convert points to numpy arrays
 	A = np.array(segment.get_points()[0].to_tuple())
@@ -84,21 +76,22 @@ def calculate_point_segment_distance(point: Point, segment: Segment) -> float:
 	# Return the Euclidean distance
 	return np.linalg.norm(P - closest_point)
 
-def iterate_over_length(segment: Segment, step: float = None, num_steps: int = None, direction: int = 1) -> Generator[Point, None, None]:
+def iterate_over_length(segment: Segment, step: float = None, num_steps: int = None, direction: int = 1) -> Generator[tuple[int, Point], None, None]:
 	if step is not None and num_steps is not None:
 		raise ValueError("Cannot specify both `step` and `num_steps`")
 	if step is None and num_steps is None:
 		raise ValueError("Must specify either `step` or `num_steps`")
 	if direction not in (1, -1):
 		raise ValueError("Direction must be 1 or -1")
-
 	
 	point_1 = segment.get_points()[0]
 
 	if num_steps is None:
 		num_steps = int(segment.length // step)
+
+	num_steps = max(1, num_steps)
 	
 	step: Vector = Vector.from_segment(segment) / num_steps
 
 	for i in range(0, num_steps + 1):
-		yield point_1 + i * step
+		yield i, point_1 + i * step

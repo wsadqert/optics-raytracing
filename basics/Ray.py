@@ -24,7 +24,7 @@ class Ray(Basic2D):
 		self.x2 = point_2.x
 		self.y2 = point_2.y
 
-		self.angle = math.atan2(self.y2 - self.y1, self.x2 - self.x1)
+		self.angle = math.degrees(math.atan2(self.y2 - self.y1, self.x2 - self.x1))
 		self.length = math.sqrt((self.x2 - self.x1) ** 2 + (self.y2 - self.y1) ** 2)
 
 		return self
@@ -33,12 +33,12 @@ class Ray(Basic2D):
 	def from_polar(cls, point_1: Point, length: float, angle: float):
 		self = cls.__new__(cls)
 		
-		angle /= -180 / pi
+		angle_rad = math.radians(angle)
 
 		self.x1 = point_1.x
 		self.y1 = point_1.y
-		self.x2 = point_1.x + length * math.cos(angle)
-		self.y2 = point_1.y + length * math.sin(angle)
+		self.x2 = point_1.x + length * math.cos(angle_rad)
+		self.y2 = point_1.y + length * math.sin(angle_rad)
 		self.angle = angle
 		self.length = length
 
@@ -65,31 +65,28 @@ class Ray(Basic2D):
 			case "angle":
 				# saving point_1, length
 				self.angle = new_value
-				self.x2 = self.x1 + self.length * math.cos(self.angle)
-				self.y2 = self.y1 + self.length * math.sin(self.angle)
+				self.x2 = self.x1 + self.length * math.cos(math.radians(self.angle))
+				self.y2 = self.y1 + self.length * math.sin(math.radians(self.angle))
 
 			case "length":
 				# saving point_1, angle
 				self.length = new_value
-				self.x2 = self.x1 + self.length * math.cos(self.angle)
-				self.y2 = self.y1 + self.length * math.sin(self.angle)
+				self.x2 = self.x1 + self.length * math.cos(math.radians(self.angle))
+				self.y2 = self.y1 + self.length * math.sin(math.radians(self.angle))
 
 			case "point_1":
 				# saving point_2
 				self.x1 = new_value.x
 				self.y1 = new_value.y
-				self.angle = math.atan2(self.y2 - self.y1, self.x2 - self.x1)
+				self.angle = math.degrees(math.atan2(self.y2 - self.y1, self.x2 - self.x1))
 				self.length = math.sqrt((self.x2 - self.x1)**2 + (self.y2 - self.y1)**2)
 
 			case "point_2":
 				# saving point_1
 				self.x2 = new_value.x
 				self.y2 = new_value.y
-				self.angle = math.atan2(self.y2 - self.y1, self.x2 - self.x1)
+				self.angle = math.degrees(math.atan2(self.y2 - self.y1, self.x2 - self.x1))
 				self.length = math.sqrt((self.x2 - self.x1)**2 + (self.y2 - self.y1)**2)
-
-			case "name":
-				self.name = new_value
 
 			case _:
 				raise ValueError("Invalid parameter")
@@ -102,3 +99,6 @@ class Ray(Basic2D):
 
 	def __add__(self, other: Point):
 		return self.move(other.x, other.y)
+
+	def __str__(self) -> str:
+		return f"Ray: \n\tPoint 1: {self.x1}, {self.y1}\n\tPoint 2: {self.x2}, {self.y2}\n\tAngle: {self.angle}\n\tLength: {self.length}"
