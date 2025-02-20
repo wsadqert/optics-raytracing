@@ -63,7 +63,7 @@ class RayTracingApp:
 		self.sources: list[Source] = [
 			# Laser("Laser1", Point(400, 300), angle=0),
 			# Lamp("Lamp1", Point(300, 300)),
-			Beam("Beam1", Point(400, 300), angle=-90, size=100),
+			Beam("Beam1", Point(400, 300), angle=-92, size=100, amount_rays=10),
 		]
 		self.actives: list[Active] = [
 			# Lens(name="Lens1", center=Point(500, 400), radius=100, angle=0, focus=500),

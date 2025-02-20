@@ -7,15 +7,15 @@ from basics import Ray, Point, Segment
 __all__ = ["Beam"]
 
 class Beam(Source):
-	def __init__(self, name, point: Point, angle: float, size: float, intensity = 1.):
+	def __init__(self, name, point: Point, angle: float, size: float, intensity = 1., amount_rays = 20):
 		super().__init__(name, point, angle, 0, size, intensity=intensity)
 
-		self.NUM_RAYS = 20
+		self.amount_rays = amount_rays
 
 	def get_rays(self):
 		return [
 			Ray.from_angle(point, self.angle + 90)
-			for _, point in iterate_over_length(self.to_segment(), step=self.size / self.NUM_RAYS)
+			for _, point in iterate_over_length(self.to_segment(), step=self.size / self.amount_rays)
 		]
 	
 	def to_segment(self) -> Segment:
