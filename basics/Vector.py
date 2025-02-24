@@ -64,9 +64,6 @@ class Vector(Basic2D):
 
 	def __rsub__(self, other: Point) -> "Vector":
 		return -(self - other)
-	
-	def __rsub__(self, other: Point) -> "Vector":
-		return -(self - other)
 
 	def __mul__(self, scalar: float) -> "Vector":
 		return Vector(self.x * scalar, self.y * scalar)

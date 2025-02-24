@@ -1,3 +1,5 @@
+import multiprocessing
+from typing import Literal
 from rich.traceback import install
 
 install(show_locals=True, width=300)
@@ -6,6 +8,7 @@ from colorama import Fore as FORE
 from tkinter import Tk
 
 from queue import Queue
+import threading
 
 from parser import parse_config
 from frontend import Drawer, InteractiveCanvas
@@ -57,13 +60,13 @@ class RayTracingApp:
 			self.drawer.draw_component(component)
 		
 		self.trace()
-		self.draw_rays()
+		self.draw_sources()
 
 	def create_components(self):
 		self.sources: list[Source] = [
 			# Laser("Laser1", Point(400, 300), angle=0),
 			# Lamp("Lamp1", Point(300, 300)),
-			Beam("Beam1", Point(400, 300), angle=-92, size=100, amount_rays=10),
+			Beam("Beam1", Point(400, 300), angle=-90, size=100, amount_rays=10),
 		]
 		self.actives: list[Active] = [
 			# Lens(name="Lens1", center=Point(500, 400), radius=100, angle=0, focus=500),
@@ -132,11 +135,40 @@ class RayTracingApp:
 		for ray in draw_list:
 			self.drawer.draw_ray(ray)
 
-	def draw_rays(self):
+	def draw_sources(self):
 		for source in self.sources:
 			self.drawer.draw_source(source)
 
+	@classmethod
+	def _run_app(cls):
+		root = Tk()
+		app = cls(root)
+		root.mainloop()
+	
+	@classmethod
+	def start(cls, parallel_mode: str = "none") -> threading.Thread | multiprocessing.Process | None:
+		"""
+		parallel_mode: str - one of:
+			`thread` - to run in separate thread
+			`process` - to run in separate process
+			`none` - run in main thread (default)
+		"""
+		match parallel_mode:
+			case "thread":
+				thread = threading.Thread(target=cls._run_app)
+				thread.start()
+				return thread
+
+			case "process":
+				process = multiprocessing.Process(target=cls._run_app)
+				process.start()
+				return process
+
+			case "none":
+				cls._run_app()
+			
+			case _:
+				raise ValueError
+
 if __name__ == "__main__":
-	root = Tk()
-	app = RayTracingApp(root)
-	root.mainloop()
+	app = RayTracingApp.start("process")
