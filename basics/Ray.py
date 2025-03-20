@@ -8,12 +8,12 @@ __all__ = ["Ray"]
 
 class Ray(Basic2D):
 	def __init__(self):
-		self.x1 = 0
-		self.y1 = 0
-		self.x2 = 0
-		self.y2 = 0
-		self.angle = 0
-		self.length = 0
+		self.x1: float = 0
+		self.y1: float = 0
+		self.x2: float = 0
+		self.y2: float = 0
+		self.angle: float = 0
+		self.length: float = 0
 	
 	@classmethod
 	def from_points(cls, point_1: Point, point_2: Point):

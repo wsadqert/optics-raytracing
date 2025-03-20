@@ -69,15 +69,14 @@ class RayTracingApp:
 			Beam("Beam1", Point(400, 300), angle=-90, size=100, amount_rays=10),
 		]
 		self.actives: list[Active] = [
-			# Lens(name="Lens1", center=Point(500, 400), radius=100, angle=0, focus=500),
-			Mirror(name="Mirror1", center=Point(500, 300), size=100, angle=45),
-			Mirror(name="Mirror2", center=Point(500, 400), size=100, angle=45),
+			Lens(name="Lens1", center=Point(500, 300), radius=100, angle=90, focus=100),
+			# Mirror(name="Mirror1", center=Point(500, 300), size=100, angle=45),
+			# Mirror(name="Mirror2", center=Point(500, 400), size=100, angle=45),
 			# Mirror(name="Mirror1", center=Point(650, 400), size=100, angle=-90),
 			# Wall(name="Wall1", center=Point(700, 400), size=100, angle=0),
 		]
 
 		self.components: list[Component] = self.sources + self.actives
-		# self.drawer.draw_mirror(Mirror(name="Mirror1", center=Point(650, 400), size=100, angle=-90))
 
 	def trace(self):
 		tracing_queue = Queue()
