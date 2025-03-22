@@ -1,6 +1,7 @@
 import multiprocessing
-from typing import Literal
 from rich.traceback import install
+
+from frontend.colors import convert16to8, rgb_to_hex
 
 install(show_locals=True, width=300)
 
@@ -31,6 +32,8 @@ class RayTracingApp:
 		self.canvas = InteractiveCanvas(master, dict(frontend_config_raw['tcl']))
 		self.canvas.pack()
 
+		self.canvas.bgcolor = rgb_to_hex(convert16to8(master.winfo_rgb(self.canvas["background"])))
+
 		self.drawer = Drawer(self.canvas, drawer_config)
 
 		self.create_components()
@@ -58,9 +61,6 @@ class RayTracingApp:
 		# draw all components
 		for component in self.components:
 			self.drawer.draw_component(component)
-		
-		self.trace()
-		self.draw_sources()
 
 	def create_components(self):
 		self.sources: list[Source] = [
@@ -70,6 +70,7 @@ class RayTracingApp:
 		]
 		self.actives: list[Active] = [
 			Lens(name="Lens1", center=Point(500, 300), radius=100, angle=90, focus=100),
+			Splitter(name="Splitter1", center=Point(450, 300), size=70, angle=20, reflect_ratio=0.3)
 			# Mirror(name="Mirror1", center=Point(500, 300), size=100, angle=45),
 			# Mirror(name="Mirror2", center=Point(500, 400), size=100, angle=45),
 			# Mirror(name="Mirror1", center=Point(650, 400), size=100, angle=-90),
@@ -112,11 +113,12 @@ class RayTracingApp:
 						if is_skipping:
 							break
 
-						new_ray = active.apply(ray)
+						new_rays: list = active.apply(ray)
 
 						ray.modify("point_2", current_point)  # cropping existing ray at current_point
 						draw_list.append(ray)
-						tracing_queue.put(new_ray)
+						for new_ray in new_rays:
+							tracing_queue.put(new_ray)
 
 						is_intersection_found = True
 						break

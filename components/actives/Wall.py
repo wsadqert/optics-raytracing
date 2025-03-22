@@ -8,4 +8,4 @@ class Wall(Active):
 
 
 	def apply(self, ray: Ray):
-		return Ray()
+		return [Ray()]

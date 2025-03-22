@@ -14,9 +14,10 @@ class Ray(Basic2D):
 		self.y2: float = 0
 		self.angle: float = 0
 		self.length: float = 0
+		self.intensity: float = 1
 	
 	@classmethod
-	def from_points(cls, point_1: Point, point_2: Point):
+	def from_points(cls, point_1: Point, point_2: Point, intensity: float = 1):
 		self = cls.__new__(cls)
 
 		self.x1 = point_1.x
@@ -26,11 +27,12 @@ class Ray(Basic2D):
 
 		self.angle = math.degrees(math.atan2(self.y2 - self.y1, self.x2 - self.x1))
 		self.length = math.sqrt((self.x2 - self.x1) ** 2 + (self.y2 - self.y1) ** 2)
+		self.intensity = intensity
 
 		return self
 
 	@classmethod
-	def from_polar(cls, point_1: Point, length: float, angle: float):
+	def from_polar(cls, point_1: Point, length: float, angle: float, intensity: float = 1):
 		self = cls.__new__(cls)
 		
 		angle_rad = math.radians(angle)
@@ -41,11 +43,12 @@ class Ray(Basic2D):
 		self.y2 = point_1.y + length * math.sin(angle_rad)
 		self.angle = angle
 		self.length = length
+		self.intensity = intensity
 
 		return self
 	
 	@classmethod
-	def from_angle(cls, point_1: Point, angle: float):
+	def from_angle(cls, point_1: Point, angle: float, intensity: float = 1):
 		self = cls.__new__(cls)
 		
 		length = 1000
@@ -57,6 +60,7 @@ class Ray(Basic2D):
 		self.y2 = point_1.y + length * math.sin(angle_rad)
 		self.angle = angle
 		self.length = math.sqrt((self.x2 - self.x1) ** 2 + (self.y2 - self.y1) ** 2)
+		self.intensity = intensity
 
 		return self
 
@@ -87,7 +91,10 @@ class Ray(Basic2D):
 				self.y2 = new_value.y
 				self.angle = math.degrees(math.atan2(self.y2 - self.y1, self.x2 - self.x1))
 				self.length = math.sqrt((self.x2 - self.x1)**2 + (self.y2 - self.y1)**2)
-
+			
+			case "intensity":
+				self.intensity = new_value
+			
 			case _:
 				raise ValueError("Invalid parameter")
 

@@ -10,7 +10,7 @@ class Active(Component):
 		super().__init__(name, point, angle, size_x, size_y, *args, **kwargs)
 
 	@abstractmethod
-	def apply(self, ray: Ray) -> Ray:
+	def apply(self, ray: Ray) -> list[Ray]:
 		pass
 
 	def distance(self, point: Point) -> float:

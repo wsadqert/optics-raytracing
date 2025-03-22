@@ -29,6 +29,6 @@ class Lens(Active):
 		new_angle = math.atan(math.tan(ray_angle_rad) - h / self.focus)
 		new_angle = math.degrees(new_angle) + (self.angle - 90)
 
-		new_ray = Ray.from_angle(intersection_point, new_angle)
+		new_ray = Ray.from_angle(intersection_point, new_angle, ray.intensity)
 
-		return new_ray
+		return [new_ray]

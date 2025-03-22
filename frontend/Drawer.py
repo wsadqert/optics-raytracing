@@ -3,6 +3,7 @@ import tkinter as tk
 
 from basics import *
 from components import *
+from frontend.colors import get_transparent_color
 from .DrawerConfig import DrawerConfig
 
 __all__ = ["Drawer"]
@@ -38,7 +39,7 @@ class Drawer:
 			y1 + self.canvas.dy_total,
 			x2 + self.canvas.dx_total,
 			y2 + self.canvas.dy_total,
-			fill=self.config.ray_color,
+			fill=get_transparent_color(ray, self.config.ray_color, self.canvas.bgcolor),
 			width=self.config.ray_width,
 		)
 
@@ -77,7 +78,7 @@ class Drawer:
 		self.canvas.objects.append(line)
 
 	def draw_mirror(self, mirror: Mirror):
-		if not isinstance(mirror, Mirror): raise TypeError
+		# if not isinstance(mirror, Mirror): raise TypeError
 
 		x = mirror.x
 		y = mirror.y
@@ -107,5 +108,7 @@ class Drawer:
 			self.draw_mirror(component)
 		elif isinstance(component, Wall):
 			self.draw_wall(component)
+		elif isinstance(component, Splitter):
+			self.draw_mirror(component)
 		else:
 			raise TypeError(f"Unsupported component type: {type(component)}")
